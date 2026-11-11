@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>תשלום עבור נכסים</title>
+<style>
+  :root{
+    --brand:#0070f2; --link:#0064d9; --ink:#131e29; --muted:#556b82;
+    --page:#f5f6f7; --shell:#eff1f2; --line:#e5e5e5; --head-line:#a8b2bd;
+    --field:#556b81; --neg:#aa0808; --pos:#256f3a; --info-bg:#e1f4ff;
+    --shadow0:0 0 .125rem 0 rgba(34,53,72,.2),0 .125rem .25rem 0 rgba(34,53,72,.2);
+    --shadow2:0 .625rem 1.875rem 0 rgba(34,53,72,.15),0 0 .125rem 0 rgba(34,53,72,.2);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--ink);font-family:"72","72full",Arial,Helvetica,sans-serif;font-size:14px;line-height:1.4}
+  .wrap{max-width:1600px;margin:0 auto;padding:12px 24px;display:flex;flex-direction:column;gap:8px}
+  .card{background:#fff;border-radius:12px;box-shadow:var(--shadow0);padding:8px 24px;display:flex;flex-direction:column;gap:8px}
+  .card-head{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:26px}
+  h2{margin:0;font-size:16px;font-weight:700}
+  .mono{font-family:"72Mono","72",monospace}
+  .table-box{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:4px 12px}
+  thead th{padding:6px 12px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--head-line);text-align:right;white-space:nowrap}
+  tbody td,tbody th{border-bottom:1px solid var(--line)}
+  .num{text-align:left;direction:ltr;font-family:"72Mono","72",monospace;white-space:nowrap}
+  .date{direction:ltr;text-align:right;white-space:nowrap}
+  .hl{background:var(--page)}
+  .strong{font-weight:700}
+  .blue{color:var(--link)}
+  .green{color:var(--pos)}
+  .note{color:var(--muted)}
+  tfoot th,tfoot td,.total-row th,.total-row td{border-top:2px solid var(--ink);font-weight:700;border-bottom:none}
+  .row-label{text-align:right;font-weight:400}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .field{height:26px;padding:0 8px;border:1px solid var(--field);border-radius:4px;background:#fff;color:var(--ink);font:inherit;font-size:14px}
+  .field:hover,.field:focus{border-color:var(--link)}
+  :focus-visible{outline:2px solid #0032a5;outline-offset:1px}
+  .ro{height:26px;padding:0 8px;display:flex;align-items:center;border-radius:4px;background:var(--page)}
+  .btn{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border:1px solid #bcc3ca;border-radius:8px;background:#fff;color:var(--link);font:inherit;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;text-decoration:none}
+  .btn:hover{background:#eaecee}
+  .btn-em{background:var(--brand);border-color:var(--brand);color:#fff}
+  .btn-em:hover{background:var(--link);border-color:var(--link)}
+  .btn-lg{height:36px;min-width:88px;justify-content:center;padding:0 16px}
+  .icon-btn{width:28px;height:26px;display:inline-flex;align-items:center;justify-content:center;padding:0;border:none;border-radius:8px;background:transparent;cursor:pointer}
+  .icon-btn:hover{background:#eaecee}
+  .vh-field{width:100%;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 8px 0 4px;text-align:right;cursor:pointer}
+  .vh-field span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .progress{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .bar{width:320px;max-width:40vw;height:16px;background:var(--shell);border-radius:8px;overflow:hidden}
+  .bar>div{height:16px;background:var(--brand);border-radius:8px}
+  .badge{background:var(--info-bg);color:var(--link);border-radius:6px;padding:0 8px;font-size:13px;font-weight:600;white-space:nowrap}
+  .overlay{position:fixed;inset:0;background:rgba(34,53,72,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
+  .dialog{width:820px;max-width:100%;max-height:100%;background:#fff;border-radius:12px;box-shadow:var(--shadow2);display:flex;flex-direction:column;overflow:hidden}
+  .dlg-head{display:flex;align-items:center;justify-content:space-between;height:44px;padding:0 16px;border-bottom:1px solid #d9d9d9;flex:none}
+  .dlg-head h3{margin:0;font-size:16px;font-weight:700}
+  .dlg-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:40px;row-gap:8px;padding:16px 24px;overflow-y:auto}
+  .dlg-col{display:flex;flex-direction:column;gap:8px}
+  .frow{display:flex;align-items:center;gap:12px}
+  .frow>.lbl{width:110px;flex:none;font-size:13px;color:var(--muted)}
+  .frow>.grow{flex:1;min-width:0}
+  .dlg-foot{display:flex;align-items:center;justify-content:flex-end;gap:8px;height:52px;padding:0 16px;border-top:1px solid #d9d9d9;flex:none}
+  .vh-list{height:300px;overflow-y:auto}
+  .vh-item{width:100%;display:flex;align-items:center;gap:16px;padding:0 24px;height:32px;border:none;border-bottom:1px solid var(--line);background:#fff;color:var(--ink);font:inherit;font-size:14px;text-align:right;cursor:pointer}
+  .vh-item:hover{background:#eaecee}
+  .vh-item[aria-selected="true"]{background:var(--info-bg)}
+  .vh-item .code{width:80px;flex:none;font-family:"72Mono","72",monospace;color:var(--muted)}
+  @media (max-width:720px){
+    .wrap{padding:12px 16px}
+    .card{padding:8px 12px}
+    .dlg-body{grid-template-columns:minmax(0,1fr)}
+  }
+</style>
+</head>
+<body>
+<main id="app" class="wrap"></main>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- configuration ----------
+  var VAT_RATE = 18;          // %
+  var CURRENCY = "₪";
+  var PAID_NET = 150000;      // סה"כ תשלום לפני מע"מ (mock)
+  var PDF_URL = "account-statement.pdf";
+
+  var TYPES = ["טיפול משפטי","הוצאות חיבור לתשתיות","הוצאות רישומים","מחסן","טיפול משפטי מחסן","שינויי דיירים","טיפול משפטי נוסף","דחיית הפרשי הצמדה","תכולת דירה לדוגמא","פיצוי איחור במסירה","החזר כספי","הנחה","חניה","גרג'","מדד נוסף חניה ומחסנים","מד מים","מכתב החרגה ספציפי","החזר תביעות משפטיות","הצמדת מסירה","מדד לפי חישוב ידוע גמ\"ח","הוצאות","ללא הצמדה","הצמדה 2","פסק דין","הצמדה 4","הצמדה 5","שינוי דיירים זיכוי","פיצוי מוסכם בגין איחור במסירה","תשלומי איזון","מע\"מ","הסכם פשרה","גמ\"ח","איפוס חשבון","מע\"מ בגין שירותי בנייה","חיבור מים","השתתפות בהוצאות רישומים וחיבור לתשתיות","פנקס שוברים","מיסים והיטלים עירוניים","תשלום ביתר","מחילה על ריבית שנצברו בשל איחור בתשלום","שיק/העברה בגין החזר תשלום שניתן ללקוח","היטל השבחה"]
+    .map(function (name, i) { return { code: String(i + 1).padStart(7, "0"), name: name }; });
+
+  // ---------- state ----------
+  var seq = 100;
+  var state = {
+    cnText: "250000",
+    addRows: [
+      { id: 1, type: "שינויי דיירים", date: "10/04/2026", note: "הרחבת שטח לפי נספח א", net: 20000, paid: 10000 },
+      { id: 2, type: "חניה", date: "22/07/2026", note: "חניה נוספת", net: 8500, paid: 8500 },
+      { id: 3, type: "מחסן", date: "05/10/2026", note: "N/A", net: 12000, paid: 0 }
+    ],
+    msRows: [
+      { id: 1, date: "15/03/2026", share: 0.3, note: "מקדמה בחתימת החוזה" },
+      { id: 2, date: "30/06/2026", share: 0.5, note: "תשלום שני לפי אבן דרך" },
+      { id: 3, date: "30/09/2026", share: 0.2, note: "N/A" }
+    ],
+    dlg: null,   // payment dialog
+    vh: null     // value-help popup
+  };
+
+  // ---------- helpers ----------
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function num(v) { var n = Number(String(v).replace(/,/g, "")); return isFinite(n) ? n : 0; }
+  function fmt(n) { return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + CURRENCY; }
+  var K = 1 + VAT_RATE / 100;
+  function cn() { return num(state.cnText); }
+  function pctOf(n) { var c = cn(); return (c > 0 ? n / c * 100 : 0).toFixed(2) + "%"; }
+
+  var ICON = {
+    plus: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>',
+    trash: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4M6.8 6.5v4.5M9.2 6.5v4.5"/></svg>',
+    close: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>',
+    list: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#0064d9" stroke-width="1.4" stroke-linecap="round"><path d="M5 4.5h8M5 8h8M5 11.5h8M2.5 4.5h.5M2.5 8h.5M2.5 11.5h.5"/></svg>',
+    doc: '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 1.5h6l3 3v10h-9z"/><path d="M9.5 1.5v3h3M5.5 8h5M5.5 10.5h5M5.5 13h3"/></svg>',
+    search: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#556b82" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>'
+  };
+  function actions(kind, id) {
+    return '<div style="display:flex;justify-content:center;gap:4px">' +
+      '<button type="button" class="icon-btn" style="color:#0064d9" aria-label="הוסף שורה מתחת" title="הוסף שורה" data-act="' + kind + '-insert" data-id="' + id + '">' + ICON.plus + '</button>' +
+      '<button type="button" class="icon-btn" style="color:#aa0808" aria-label="מחק שורה" title="מחק שורה" data-act="' + kind + '-remove" data-id="' + id + '">' + ICON.trash + '</button></div>';
+  }
+
+  // ---------- sections ----------
+  function contractCard() {
+    var c = cn(), p = PAID_NET, b = c - p;
+    var pct = c > 0 ? Math.min(100, Math.max(0, Math.round(p / c * 100))) : 0;
+    function row(n) { return { net: fmt(n), vat: fmt(n * VAT_RATE / 100), gross: fmt(n * K) }; }
+    var C = row(c), P = row(p), B = row(b);
+    return '<section class="card" aria-labelledby="pay-title">' +
+      '<div class="card-head"><h2 id="pay-title">סה"כ חוזה</h2>' +
+      '<div class="progress"><span class="note" style="font-size:13px">התקדמות תשלום</span>' +
+      '<div class="bar" role="img" aria-label="התקדמות תשלום ' + pct + '%"><div style="width:' + pct + '%"></div></div>' +
+      '<span class="badge">שולם ' + pct + '%</span>' +
+      '<a class="btn btn-em" style="margin-inline-start:12px" href="' + PDF_URL + '" target="_blank" rel="noopener">' + ICON.doc + 'מצב חשבון</a></div></div>' +
+      '<div class="table-box"><table><thead><tr><th style="width:25%"></th><th class="num" style="width:25%">סה"כ חוזה</th><th class="num" style="width:25%">סה"כ תשלום</th><th class="num hl" style="width:25%;color:#131e29;font-weight:700">יתרה</th></tr></thead><tbody>' +
+      '<tr><th scope="row" class="row-label">סה"כ לפני מע"מ</th>' +
+      '<td class="num" style="padding:3px 12px"><label for="contract-net" class="sr">סה"כ חוזה לפני מע"מ</label><div style="display:flex;align-items:center;gap:6px"><input id="contract-net" class="field mono" style="width:160px;text-align:left" type="text" inputmode="decimal" value="' + esc(state.cnText) + '" data-input="cn"><span>' + CURRENCY + '</span></div></td>' +
+      '<td class="num">' + P.net + '</td><td class="num hl">' + B.net + '</td></tr>' +
+      '<tr><th scope="row" class="row-label">מע"מ <span class="note">(' + VAT_RATE + '%)</span></th><td class="num">' + C.vat + '</td><td class="num">' + P.vat + '</td><td class="num hl">' + B.vat + '</td></tr>' +
+      '<tr class="total-row"><th scope="row" class="row-label" style="font-weight:700">סה"כ כולל מע"מ</th><td class="num">' + C.gross + '</td><td class="num green">' + P.gross + '</td><td class="num blue hl">' + B.gross + '</td></tr>' +
+      '</tbody></table></div></section>';
+  }
+
+  function additionsCard() {
+    var rows = state.addRows, sn = 0, sp = 0;
+    var body = rows.map(function (r) {
+      sn += r.net; sp += r.paid;
+      return '<tr>' +
+        '<td><button type="button" class="field vh-field" aria-haspopup="dialog" aria-label="סוג תוספת: ' + esc(r.type) + '" data-act="vh-add" data-id="' + r.id + '"><span>' + esc(r.type) + '</span>' + ICON.list + '</button></td>' +
+        '<td class="date">' + esc(r.date) + '</td>' +
+        '<td class="note">' + esc(r.note) + '</td>' +
+        '<td class="num">' + fmt(r.net) + '</td>' +
+        '<td class="num">' + fmt(r.net * K) + '</td>' +
+        '<td class="num">' + fmt(r.paid) + '</td>' +
+        '<td class="num">' + fmt(r.paid * K) + '</td>' +
+        '<td class="num strong blue hl">' + fmt(r.net - r.paid) + '</td>' +
+        '<td>' + actions("add", r.id) + '</td></tr>';
+    }).join("");
+    return '<section class="card" aria-labelledby="add-title">' +
+      '<div class="card-head"><h2 id="add-title">תוספות (' + rows.length + ')</h2>' +
+      '<button type="button" class="btn" data-act="add-append">' + ICON.plus + 'הוסף שורה</button></div>' +
+      '<div class="table-box"><table><thead><tr>' +
+      '<th style="width:14%">סוג תוספת</th><th style="width:8%">תאריך</th><th>הערות</th>' +
+      '<th class="num" style="width:11%">סה"כ ללא מע"מ</th><th class="num" style="width:11%">סה"כ כולל מע"מ</th>' +
+      '<th class="num" style="width:11%">סה"כ תשלומים ללא מע"מ</th><th class="num" style="width:11%">סה"כ תשלומים כולל מע"מ</th>' +
+      '<th class="num hl" style="width:11%;color:#131e29;font-weight:700">הפרש ללא מע"מ</th><th style="width:88px;text-align:center">פעולות</th>' +
+      '</tr></thead><tbody>' + body + '</tbody>' +
+      '<tfoot><tr><th scope="row" colspan="3" style="text-align:right">סה"כ תוספות</th>' +
+      '<td class="num">' + fmt(sn) + '</td><td class="num">' + fmt(sn * K) + '</td><td class="num">' + fmt(sp) + '</td><td class="num">' + fmt(sp * K) + '</td>' +
+      '<td class="num blue hl">' + fmt(sn - sp) + '</td><td></td></tr></tfoot></table></div></section>';
+  }
+
+  function milestonesCard() {
+    var c = cn(), tn = 0;
+    var body = state.msRows.map(function (m, i) {
+      var net = c * m.share; tn += net;
+      return '<tr><td class="mono note">' + (i + 1) + '</td>' +
+        '<td class="date">' + esc(m.date) + '</td>' +
+        '<td class="num">' + fmt(net) + '</td>' +
+        '<td class="num">' + fmt(net * K) + '</td>' +
+        '<td class="num">' + pctOf(net) + '</td>' +
+        '<td class="note">' + esc(m.note) + '</td>' +
+        '<td>' + actions("ms", m.id) + '</td></tr>';
+    }).join("");
+    return '<section class="card" aria-labelledby="list-title">' +
+      '<div class="card-head"><h2 id="list-title">תשלומים - אבני דרך (' + state.msRows.length + ')</h2>' +
+      '<button type="button" class="btn" data-act="ms-append">' + ICON.plus + 'הוסף שורה</button></div>' +
+      '<div class="table-box"><table><thead><tr>' +
+      '<th style="width:5%">#</th><th style="width:12%">תאריך</th><th class="num" style="width:17%">סה"כ לפני מע"מ</th>' +
+      '<th class="num" style="width:17%">סה"כ כולל מע"מ</th><th class="num" style="width:8%">%</th><th>הערה</th><th style="width:88px;text-align:center">פעולות</th>' +
+      '</tr></thead><tbody>' + body + '</tbody>' +
+      '<tfoot><tr><th scope="row" colspan="2" style="text-align:right">סה"כ</th>' +
+      '<td class="num">' + fmt(tn) + '</td><td class="num">' + fmt(tn * K) + '</td><td class="num blue">' + pctOf(tn) + '</td><td colspan="2"></td></tr></tfoot>' +
+      '</table></div></section>';
+  }
+
+  function paymentDialog() {
+    var d = state.dlg; if (!d) return "";
+    var dn = num(d.net);
+    function ro(label, value, extra) { return '<div class="frow"><span class="lbl">' + label + '</span><div class="ro grow" ' + (extra || "") + '>' + value + '</div></div>'; }
+    function inp(id, label, key, extra) { return '<div class="frow"><label class="lbl" for="' + id + '">' + label + '</label><input id="' + id + '" class="field grow" type="text" value="' + esc(d[key]) + '" data-dlg="' + key + '" ' + (extra || "") + '></div>'; }
+    function sel(id, key, opts, style) { return '<select id="' + id + '" class="field" style="' + style + '" data-dlg="' + key + '">' + opts.map(function (o) { return '<option' + (o === d[key] ? " selected" : "") + '>' + esc(o) + '</option>'; }).join("") + '</select>'; }
+    var months = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
+    return '<div class="overlay"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title">' +
+      '<div class="dlg-head"><h3 id="dlg-title">תשלום חדש</h3><button type="button" class="icon-btn" style="width:32px;height:32px;color:#556b82" aria-label="סגור" data-act="dlg-cancel">' + ICON.close + '</button></div>' +
+      '<div class="dlg-body"><div class="dlg-col">' +
+      ro("פרויקט", "מתחם דפנה") + ro("לקוח", "M093") + ro("שם לקוח", "בן-יורם אלעד נתנאל") + ro("חוזה", "M/145") +
+      '<div class="frow"><span class="lbl">תוספת</span><button type="button" class="field vh-field grow" aria-haspopup="dialog" aria-label="תוספת: ' + esc(d.addition || "ללא") + '" data-act="vh-dlg"><span>' + esc(d.addition || "ללא") + '</span>' + ICON.list + '</button></div>' +
+      inp("dlg-date", "תאריך", "date", 'placeholder="dd/mm/yyyy" style="direction:ltr;text-align:right"') +
+      ro("מספר", d.at + 1, 'style="font-family:\'72Mono\',\'72\',monospace"') +
+      inp("dlg-note", "הערה", "note") +
+      '</div><div class="dlg-col">' +
+      ro("מטבע", CURRENCY) +
+      '<div class="frow"><label class="lbl" for="dlg-net" style="color:#131e29;font-weight:600">סכום לפני מע"מ</label><input id="dlg-net" class="field grow mono" style="direction:ltr;text-align:left" type="text" inputmode="decimal" value="' + esc(d.net) + '" data-dlg="net"></div>' +
+      '<div class="frow"><span class="lbl">מע"מ %</span><div class="ro mono" style="width:56px;justify-content:center">' + VAT_RATE + '</div><div class="ro grow mono" dir="ltr" data-out="vat">' + fmt(dn * VAT_RATE / 100) + '</div></div>' +
+      '<div class="frow"><span class="lbl">סכום כולל מע"מ</span><div class="ro grow mono strong" dir="ltr" data-out="gross">' + fmt(dn * K) + '</div></div>' +
+      '<div class="frow"><label class="lbl" for="dlg-index">מדד</label>' + sel("dlg-index", "index", ["50% תשומות בניה","100% תשומות בניה","מדד המחירים לצרכן","ללא הצמדה"], "flex:1;min-width:0") + '</div>' +
+      '<div class="frow"><label class="lbl" for="dlg-bm">בסיס</label>' + sel("dlg-bm", "baseMonth", months, "flex:1;min-width:0") +
+      '<label for="dlg-by" class="sr">שנת בסיס</label><input id="dlg-by" class="field mono" style="width:72px;text-align:center" type="text" inputmode="numeric" value="' + esc(d.baseYear) + '" data-dlg="baseYear"></div>' +
+      '<div class="frow"><label class="lbl" for="dlg-bv">ערך בסיס</label><input id="dlg-bv" class="field grow mono" style="direction:ltr;text-align:left" type="text" inputmode="decimal" value="' + esc(d.baseValue) + '" data-dlg="baseValue"></div>' +
+      '<div class="frow"><label class="lbl" for="dlg-ir">ריבית קבועה</label><input id="dlg-ir" class="field grow mono" style="direction:ltr;text-align:left" type="text" inputmode="decimal" value="' + esc(d.interest) + '" data-dlg="interest">' +
+      '<label for="dlg-ip" class="sr">תקופת ריבית</label>' + sel("dlg-ip", "period", ["חודשית","שנתית"], "width:96px") + '</div>' +
+      '</div></div>' +
+      '<div class="dlg-foot"><button type="button" class="btn btn-em btn-lg" data-act="dlg-ok">אישור</button><button type="button" class="btn btn-lg" data-act="dlg-cancel">ביטול</button></div>' +
+      '</div></div>';
+  }
+
+  function vhItemsHtml() {
+    var v = state.vh, q = String(v.q || "").trim(), cur = vhCurrent();
+    var items = TYPES.filter(function (t) { return !q || t.name.indexOf(q) >= 0 || t.code.indexOf(q) >= 0; });
+    if (!items.length) return '<p class="note" style="margin:0;padding:16px 24px">לא נמצאו תוצאות</p>';
+    return items.map(function (t) {
+      return '<button type="button" class="vh-item" role="option" aria-selected="' + (t.name === cur) + '" data-act="vh-pick" data-name="' + esc(t.name) + '"><span class="code">' + t.code + '</span><span>' + esc(t.name) + '</span></button>';
+    }).join("");
+  }
+  function vhCurrent() {
+    var v = state.vh; if (!v) return "";
+    if (v.target === "add") { var r = state.addRows.filter(function (x) { return x.id === v.rowId; })[0]; return r ? r.type : ""; }
+    return (state.dlg && state.dlg.addition) || "";
+  }
+  function vhDialog() {
+    if (!state.vh) return "";
+    return '<div class="overlay" style="z-index:20"><div class="dialog" style="width:520px" role="dialog" aria-modal="true" aria-labelledby="vh-title">' +
+      '<div class="dlg-head"><h3 id="vh-title">בחירת סוג תוספת</h3><button type="button" class="icon-btn" style="width:32px;height:32px;color:#556b82" aria-label="סגור" data-act="vh-close">' + ICON.close + '</button></div>' +
+      '<div style="padding:12px 16px 8px"><label for="vh-search" class="sr">חיפוש</label>' +
+      '<div style="display:flex;align-items:center;gap:6px;height:32px;padding:0 8px;border:1px solid #556b81;border-radius:4px">' + ICON.search +
+      '<input id="vh-search" type="text" placeholder="חיפוש לפי קוד או תיאור" value="' + esc(state.vh.q) + '" data-input="vh" style="flex:1;height:28px;border:none;outline:none;background:transparent;font:inherit;font-size:14px;color:#131e29"></div></div>' +
+      '<div style="display:flex;gap:16px;padding:6px 24px;border-bottom:1px solid #a8b2bd;font-size:13px;font-weight:600;color:#556b82"><span style="width:80px">קוד</span><span>תיאור</span></div>' +
+      '<div class="vh-list" role="listbox" aria-label="סוגי תוספת" id="vh-list">' + vhItemsHtml() + '</div>' +
+      '<div class="dlg-foot"><button type="button" class="btn btn-lg" data-act="vh-close">ביטול</button></div>' +
+      '</div></div>';
+  }
+
+  // ---------- render ----------
+  var app = document.getElementById("app");
+  function render() {
+    var a = document.activeElement, focusId = a && a.id, s = a && a.selectionStart, e = a && a.selectionEnd;
+    app.innerHTML = contractCard() + additionsCard() + milestonesCard() + paymentDialog() + vhDialog();
+    if (focusId) {
+      var el = document.getElementById(focusId);
+      if (el) { el.focus(); try { if (s != null) el.setSelectionRange(s, e); } catch (x) {} }
+    }
+  }
+
+  function openDlg(at) {
+    state.dlg = { at: at, date: "11/11/2026", net: "", note: "", addition: "", index: "50% תשומות בניה", baseMonth: "ספטמבר", baseYear: "2026", baseValue: "190.8401", interest: "1.083", period: "חודשית" };
+    render();
+    var f = document.getElementById("dlg-net"); if (f) f.focus();
+  }
+
+  // ---------- events ----------
+  app.addEventListener("click", function (ev) {
+    var t = ev.target.closest("[data-act]"); if (!t) return;
+    var act = t.getAttribute("data-act"), id = Number(t.getAttribute("data-id"));
+    var idxOf = function (arr) { for (var i = 0; i < arr.length; i++) if (arr[i].id === id) return i; return -1; };
+    switch (act) {
+      case "add-append": state.addRows.push({ id: ++seq, type: "בחר...", date: "—", note: "", net: 0, paid: 0 }); break;
+      case "add-insert": state.addRows.splice(idxOf(state.addRows) + 1, 0, { id: ++seq, type: "בחר...", date: "—", note: "", net: 0, paid: 0 }); break;
+      case "add-remove": state.addRows = state.addRows.filter(function (r) { return r.id !== id; }); break;
+      case "ms-append": openDlg(state.msRows.length); return;
+      case "ms-insert": openDlg(idxOf(state.msRows) + 1); return;
+      case "ms-remove": state.msRows = state.msRows.filter(function (r) { return r.id !== id; }); break;
+      case "dlg-cancel": state.dlg = null; break;
+      case "dlg-ok":
+        var d = state.dlg, c = cn(), net = num(d.net);
+        state.msRows.splice(d.at, 0, { id: ++seq, date: d.date || "—", share: c > 0 ? net / c : 0, note: d.note || (d.addition ? "תוספת: " + d.addition : "N/A") });
+        state.dlg = null; break;
+      case "vh-add": state.vh = { target: "add", rowId: id, q: "" }; render(); document.getElementById("vh-search").focus(); return;
+      case "vh-dlg": state.vh = { target: "dlg", q: "" }; render(); document.getElementById("vh-search").focus(); return;
+      case "vh-close": state.vh = null; break;
+      case "vh-pick":
+        var name = t.getAttribute("data-name");
+        if (state.vh.target === "add") state.addRows.forEach(function (r) { if (r.id === state.vh.rowId) r.type = name; });
+        else if (state.dlg) state.dlg.addition = name;
+        state.vh = null; break;
+      default: return;
+    }
+    render();
+  });
+
+  app.addEventListener("input", function (ev) {
+    var t = ev.target;
+    if (t.getAttribute("data-input") === "cn") { state.cnText = t.value; render(); return; }
+    if (t.getAttribute("data-input") === "vh") { state.vh.q = t.value; document.getElementById("vh-list").innerHTML = vhItemsHtml(); return; }
+    var key = t.getAttribute("data-dlg");
+    if (key && state.dlg) {
+      state.dlg[key] = t.value;
+      if (key === "net") {
+        var n = num(t.value);
+        app.querySelector('[data-out="vat"]').textContent = fmt(n * VAT_RATE / 100);
+        app.querySelector('[data-out="gross"]').textContent = fmt(n * K);
+      }
+    }
+  });
+  app.addEventListener("change", function (ev) {
+    var key = ev.target.getAttribute("data-dlg");
+    if (key && state.dlg) state.dlg[key] = ev.target.value;
+  });
+  document.addEventListener("keydown", function (ev) {
+    if (ev.key !== "Escape") return;
+    if (state.vh) { state.vh = null; render(); } else if (state.dlg) { state.dlg = null; render(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

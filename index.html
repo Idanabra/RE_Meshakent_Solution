@@ -152,7 +152,8 @@
       '<div class="card-head"><h2 id="pay-title">סה"כ חוזה</h2>' +
       '<div class="progress"><span class="note" style="font-size:13px">התקדמות תשלום</span>' +
       '<div class="bar" role="img" aria-label="התקדמות תשלום ' + pct + '%"><div style="width:' + pct + '%"></div></div>' +
-      '<span class="badge">שולם ' + pct + '%</span></div></div>' +
+      '<span class="badge">שולם ' + pct + '%</span>' +
+      '<a class="btn btn-em" style="margin-inline-start:12px" href="' + SCHEDULE_PDF_URL + '" target="_blank" rel="noopener">' + ICON.doc + 'מצב חשבון</a></div></div>' +
       '<div class="table-box"><table><thead><tr><th style="width:25%"></th><th class="num" style="width:25%">סה"כ חוזה</th><th class="num" style="width:25%">סה"כ תשלום</th><th class="num hl" style="width:25%;color:#131e29;font-weight:700">יתרה</th></tr></thead><tbody>' +
       '<tr><th scope="row" class="row-label">סה"כ לפני מע"מ</th>' +
       '<td class="num" style="padding:3px 12px"><label for="contract-net" class="sr">סה"כ חוזה לפני מע"מ</label><div style="display:flex;align-items:center;gap:6px"><input id="contract-net" class="field mono" style="width:160px;text-align:left" type="text" inputmode="decimal" value="' + esc(state.cnText) + '" data-input="cn"><span>' + CURRENCY + '</span></div></td>' +

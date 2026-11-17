@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>כללי</title>
+<style>
+  :root{--link:#0064d9;--ink:#131e29;--muted:#556b82;--page:#f5f6f7;--line:#e5e5e5;
+    --shadow0:0 0 .125rem 0 rgba(34,53,72,.2),0 .125rem .25rem 0 rgba(34,53,72,.2)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--ink);font-family:"72","72full",Arial,Helvetica,sans-serif;font-size:14px;line-height:1.4}
+  .tabs-wrap{background:#fff;box-shadow:0 1px 0 #d9d9d9}
+  .tabs{max-width:1600px;margin:0 auto;padding:0 24px;display:flex;gap:4px}
+  .tabs a{display:inline-flex;align-items:center;height:44px;padding:0 16px;color:var(--muted);font-weight:600;text-decoration:none;border-bottom:3px solid transparent}
+  .tabs a:hover{color:var(--link)}
+  .tabs a[aria-current="page"]{color:var(--link);border-bottom-color:var(--link)}
+  .wrap{max-width:1600px;margin:0 auto;padding:16px 24px;display:flex;flex-direction:column;gap:40px}
+  .card{background:#fff;border-radius:12px;box-shadow:var(--shadow0);padding:8px 24px 20px;display:flex;flex-direction:column;gap:12px}
+  h2{margin:0;font-size:16px;font-weight:700;min-height:26px;display:flex;align-items:center}
+  .cols{display:grid;grid-template-columns:minmax(300px,1.3fr) repeat(4,minmax(0,1fr));column-gap:40px;row-gap:24px}
+  .gh{margin:0 0 12px;font-size:14px;font-weight:700;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  dl{margin:0;display:flex;flex-direction:column;gap:10px}
+  .kv{display:flex;align-items:baseline;gap:12px;min-height:22px}
+  dt{width:136px;flex:none;font-size:13px;color:var(--muted)}
+  dd{margin:0;flex:1;min-width:0}
+  .n{font-variant-numeric:tabular-nums}
+  :focus-visible{outline:2px solid #0032a5;outline-offset:1px}
+  .badge-ok{display:inline-flex;align-items:center;gap:6px;padding:1px 10px;border-radius:6px;background:#f5fae5;border:1px solid #b5dfa2;color:#256f3a;font-size:13px;font-weight:600}
+  @media (max-width:1500px){.cols{grid-template-columns:minmax(290px,1.25fr) repeat(4,minmax(0,1fr));column-gap:28px}dt{width:118px}}
+  @media (max-width:1300px){.cols{grid-template-columns:repeat(3,minmax(0,1fr))}dt{width:136px}}
+  @media (max-width:1000px){.cols{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (max-width:700px){.cols{grid-template-columns:minmax(0,1fr)}}
+  @media (max-width:720px){.wrap{padding:12px 16px}.card{padding:8px 12px 16px}.tabs{padding:0 8px;overflow-x:auto}}
+</style>
+</head>
+<body>
+<div class="tabs-wrap"><nav class="tabs" aria-label="מסכים"><a href="general.html" aria-current="page">כללי</a><a href="index.html">תשלומים</a><a href="arvut.html">ערבויות</a><a href="mesira-bedek.html">מסירה ובדק</a></nav></div>
+<main class="wrap">
+<section class="card" aria-label="פרטים כלליים" style="padding-top:16px">
+<div class="cols">
+<div>
+<h3 class="gh">פרויקט</h3>
+<dl>
+<div class="kv"><dt style="width:64px">פרויקט</dt><dd style="white-space:nowrap"><span class="n">5003</span> מכבי חדרה - סיטי</dd></div>
+<div class="kv"><dt style="width:64px">חברה</dt><dd style="white-space:nowrap">אאורה מחדשים את ישראל בע"מ</dd></div>
+<div class="kv"><dt style="width:64px">עיר</dt><dd>חדרה</dd></div>
+<div class="kv"><dt style="width:64px">כתובת</dt><dd>הרברט סמואל 56</dd></div>
+</dl>
+</div>
+<div>
+<h3 class="gh">נכס</h3>
+<dl>
+<div class="kv"><dt>בניין</dt><dd>A</dd></div>
+<div class="kv"><dt>קומה</dt><dd class="n">10</dd></div>
+<div class="kv"><dt>נכס</dt><dd>דירה <span class="n">41</span></dd></div>
+<div class="kv"><dt>חדרים</dt><dd class="n">3.5</dd></div>
+<div class="kv"><dt>שטח</dt><dd><span class="n">84.4</span> מ"ר</dd></div>
+<div class="kv"><dt>כיוון</dt><dd>מזרח</dd></div>
+</dl>
+</div>
+<div>
+<h3 class="gh">צמודות</h3>
+<dl>
+<div class="kv"><dt>חנייה</dt><dd class="n">41</dd></div>
+<div class="kv"><dt>מחסן</dt><dd class="n">110</dd></div>
+</dl>
+</div>
+<div>
+<h3 class="gh">מדד וריבית</h3>
+<dl>
+<div class="kv"><dt>מדד</dt><dd>תשומות הבנייה</dd></div>
+<div class="kv"><dt>תאריך בסיס</dt><dd class="n">10/2018</dd></div>
+<div class="kv"><dt>ערך בסיס</dt><dd class="n">149.764</dd></div>
+<div class="kv"><dt>מדד אחרון</dt><dd class="n">191.5741</dd></div>
+<div class="kv"><dt>אחוז פטור מהצמדה</dt><dd style="color:#556b82">—</dd></div>
+<div class="kv"><dt>ריבית</dt><dd class="n">1.00%</dd></div>
+</dl>
+</div>
+<div>
+<h3 class="gh">סטאטוס</h3>
+<dl>
+<div class="kv"><dt>מצב</dt><dd><span class="badge-ok"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3 3 7-7"/></svg>חתום</span></dd></div>
+<div class="kv"><dt>מזהה חוזה</dt><dd class="n">A/041</dd></div>
+<div class="kv"><dt>תאריך חתימה</dt><dd class="n">24/11/2016</dd></div>
+<div class="kv"><dt>תאריך מסירה מתוכנן</dt><dd class="n">30/12/2026</dd></div>
+<div class="kv"><dt>סה"כ לפני מע"מ</dt><dd><span class="n">1,142,265</span> ש"ח</dd></div>
+<div class="kv"><dt>סה"כ כולל מע"מ</dt><dd style="font-weight:700"><span class="n">1,336,450</span> ש"ח</dd></div>
+</dl>
+</div>
+</div>
+</section>
+</main>
+</body>
+</html>

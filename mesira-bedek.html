@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מסירה ובדק</title>
+<style>
+  :root{
+    --brand:#0070f2; --link:#0064d9; --ink:#131e29; --muted:#556b82; --page:#f5f6f7; --field:#556b81;
+    --shadow0:0 0 .125rem 0 rgba(34,53,72,.2),0 .125rem .25rem 0 rgba(34,53,72,.2);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--ink);font-family:"72","72full",Arial,Helvetica,sans-serif;font-size:14px;line-height:1.4}
+  .tabs-wrap{background:#fff;box-shadow:0 1px 0 #d9d9d9}
+  .tabs{max-width:1600px;margin:0 auto;padding:0 24px;display:flex;gap:4px}
+  .tabs a{display:inline-flex;align-items:center;height:44px;padding:0 16px;color:var(--muted);font-weight:600;text-decoration:none;border-bottom:3px solid transparent}
+  .tabs a:hover{color:var(--link)}
+  .tabs a[aria-current="page"]{color:var(--link);border-bottom-color:var(--link)}
+  .wrap{max-width:1600px;margin:0 auto;padding:16px 24px;display:flex;flex-direction:column;gap:40px}
+  .card{background:#fff;border-radius:12px;box-shadow:var(--shadow0);padding:8px 24px 16px;display:flex;flex-direction:column;gap:12px}
+  h2{margin:0;font-size:16px;font-weight:700;min-height:26px;display:flex;align-items:center}
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:64px;row-gap:8px}
+  .full{grid-column:1/-1}
+  .fr{display:flex;align-items:center;gap:12px;min-height:26px}
+  .fl{width:260px;flex:none;font-size:13px;color:var(--muted)}
+  .fi{flex:1;min-width:0;height:26px;padding:0 8px;border:1px solid var(--field);border-radius:4px;background:#fff;color:var(--ink);font:inherit;font-size:14px}
+  .fi:hover,.fi:focus{border-color:var(--link)}
+  :focus-visible{outline:2px solid #0032a5;outline-offset:1px}
+  textarea.fi{height:58px;padding:4px 8px;resize:none}
+  .fs{flex:none;width:72px;text-align:center;direction:ltr;font-variant-numeric:tabular-nums}
+  .dw{flex:1;min-width:0;position:relative;display:flex}
+  .dt{direction:ltr;text-align:right;padding-left:34px}
+  .cal{position:absolute;left:2px;top:2px;width:28px;height:22px;display:inline-flex;align-items:center;justify-content:center;padding:0;border:none;border-radius:4px;background:transparent;color:var(--link);cursor:pointer}
+  .cal:hover{background:#eaecee}
+  .dp{position:absolute;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none;border:0;padding:0}
+  .actions{display:flex;justify-content:flex-end;gap:8px;padding-top:4px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;height:36px;min-width:120px;padding:0 16px;border:1px solid #bcc3ca;border-radius:8px;background:#fff;color:var(--link);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+  .btn:hover{background:#eaecee}
+  @media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}.fl{width:180px}}
+  @media (max-width:720px){.wrap{padding:12px 16px}.card{padding:8px 12px 12px}.tabs{padding:0 8px;overflow-x:auto}.fr{flex-wrap:wrap}.fl{width:100%}}
+</style>
+</head>
+<body>
+<div class="tabs-wrap"><nav class="tabs" aria-label="מסכים"><a href="general.html">כללי</a><a href="index.html">תשלומים</a><a href="arvut.html">ערבויות</a><a href="mesira-bedek.html" aria-current="page">מסירה ובדק</a></nav></div>
+<main class="wrap">
+
+<section class="card" aria-labelledby="m-title">
+<h2 id="m-title">מסירה</h2>
+<div class="grid">
+<div class="fr"><label class="fl" for="m-ext">גורם אחראי (חיצוני)</label><input id="m-ext" class="fi" type="text"></div>
+<div class="fr"><label class="fl" for="m-grace2">ימי חסד נוספים בגין פיגורים/ שינויים</label><input id="m-grace2" class="fi" type="text" inputmode="numeric"></div>
+<div class="fr"><label class="fl" for="m-int">גורם אחראי (פנימי)</label><select id="m-int" class="fi"><option value="">בחר</option><option>מנהל פרויקט</option><option>מהנדס ביצוע</option><option>מנהל שירות לקוחות</option><option>מחלקת בדק</option></select></div>
+<div class="fr"><label class="fl" for="m-pay">אופן תשלום</label><select id="m-pay" class="fi"><option value="">בחר</option><option>זיכוי בחשבון הלקוח</option><option>קיזוז מתשלום הבא</option><option>תשלום ישיר ללקוח</option></select></div>
+<div class="fr"><label class="fl" for="m-warr">תאריך גמר אחריות</label><div class="dw" data-date></div></div>
+<div class="fr"><label class="fl" for="m-from">חישוב פיצוי מיום</label><input id="m-from" class="fi fs" type="text" inputmode="numeric" value="1"></div>
+<div class="fr"><label class="fl" for="m-cur">מטבע פיצוי</label><select id="m-cur" class="fi"><option value="">בחר</option><option>שקל חדש</option><option>דולר</option><option>אירו</option></select></div>
+<div class="fr"><label class="fl" for="m-grace">ימי חסד לפיצויים</label><input id="m-grace" class="fi fs" type="text" inputmode="numeric"></div>
+<div class="fr full" style="align-items:flex-start"><label class="fl" for="m-notes" style="padding-top:4px">הערות</label><textarea id="m-notes" class="fi"></textarea></div>
+</div>
+<div class="actions"><button type="button" class="btn">מדרגות פיצוי</button><button type="button" class="btn">מפרט מסירה</button></div>
+</section>
+
+<section class="card" aria-labelledby="b-title">
+<h2 id="b-title">בדק</h2>
+<div class="grid">
+<div class="fr"><label class="fl" for="b-plan">תאריך בדק מתוכנן</label><div class="dw" data-date></div></div>
+<div class="fr"><label class="fl" for="b-int">גורם אחראי (פנימי)</label><select id="b-int" class="fi"><option value="">בחר</option><option>מנהל פרויקט</option><option>מהנדס ביצוע</option><option>מנהל שירות לקוחות</option><option>מחלקת בדק</option></select></div>
+<div class="fr"><label class="fl" for="b-act">תאריך בדיקה בפועל</label><div class="dw" data-date></div></div>
+<div class="fr"><label class="fl" for="b-sent">תאריך משלוח מכתב לדייר</label><div class="dw" data-date></div></div>
+<div class="fr"><label class="fl" for="b-st">סטטוס בדיקה</label><select id="b-st" class="fi"><option value="">בחר</option><option>מתוכננת</option><option>בוצעה</option><option>בטיפול</option><option>נסגרה</option></select></div>
+<div class="fr"><label class="fl" for="b-resp">תאריך תגובת הדייר</label><div class="dw" data-date></div></div>
+<div class="fr"><label class="fl" for="b-ext">גורם אחראי (חיצוני)</label><input id="b-ext" class="fi" type="text"></div>
+<div></div>
+<div class="fr full" style="align-items:flex-start"><label class="fl" for="b-notes" style="padding-top:4px">הערות</label><textarea id="b-notes" class="fi"></textarea></div>
+</div>
+<div class="actions"><button type="button" class="btn">מפרט בדק</button></div>
+</section>
+
+</main>
+<script>
+(function () {
+  "use strict";
+  var CAL = '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"/></svg>';
+  // Build each date field: text input (dd/mm/yyyy) + calendar button + hidden native picker
+  document.querySelectorAll("[data-date]").forEach(function (box) {
+    var label = box.parentNode.querySelector("label");
+    var id = label.getAttribute("for");
+    box.innerHTML = '<input id="' + id + '" class="fi dt" type="text" placeholder="dd/mm/yyyy">' +
+      '<button type="button" class="cal" aria-label="בחר ' + label.textContent + '">' + CAL + '</button>' +
+      '<input class="dp" type="date" tabindex="-1" aria-hidden="true">';
+    var text = box.querySelector(".dt"), btn = box.querySelector(".cal"), picker = box.querySelector(".dp");
+    btn.addEventListener("click", function () {
+      try { if (picker.showPicker) { picker.showPicker(); return; } } catch (e) {}
+      picker.focus(); picker.click();
+    });
+    picker.addEventListener("change", function () {
+      if (!picker.value) return;
+      var p = picker.value.split("-");
+      text.value = p[2] + "/" + p[1] + "/" + p[0];
+    });
+  });
+})();
+</script>
+</body>
+</html>

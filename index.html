@@ -14,7 +14,7 @@
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--page);color:var(--ink);font-family:"72","72full",Arial,Helvetica,sans-serif;font-size:14px;line-height:1.4}
-  .wrap{max-width:1600px;margin:0 auto;padding:12px 24px;display:flex;flex-direction:column;gap:8px}
+  .wrap{max-width:1600px;margin:0 auto;padding:16px 24px;display:flex;flex-direction:column;gap:40px}
   .card{background:#fff;border-radius:12px;box-shadow:var(--shadow0);padding:8px 24px;display:flex;flex-direction:column;gap:8px}
   .card-head{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:26px}
   h2{margin:0;font-size:16px;font-weight:700}
@@ -81,10 +81,14 @@
   "use strict";
 
   // ---------- configuration ----------
-  var VAT_RATE = 18;          // %
+  var VAT_RATE = 17;          // %
   var CURRENCY = "₪";
-  var PAID_NET = 150000;      // סה"כ תשלום לפני מע"מ (mock)
-  var PDF_URL = "account-statement.pdf";
+  var PAID_NET = 1142264.96;  // סה"כ תשלום לפני מע"מ (mock)
+  var MOCK_CONTRACT = "1,142,264.957";
+  // Values shown as-is while the contract amount is unchanged (taken from SAP B1)
+  var MOCK_PAID = { net: 1142264.96, vat: 204125.06, gross: 1346389.80 };
+  var MOCK_BALANCE = { net: 0, vat: 9940.02, gross: 9939.00 };
+  var SCHEDULE_PDF_URL = "payment-schedule.pdf";
 
   var TYPES = ["טיפול משפטי","הוצאות חיבור לתשתיות","הוצאות רישומים","מחסן","טיפול משפטי מחסן","שינויי דיירים","טיפול משפטי נוסף","דחיית הפרשי הצמדה","תכולת דירה לדוגמא","פיצוי איחור במסירה","החזר כספי","הנחה","חניה","גרג'","מדד נוסף חניה ומחסנים","מד מים","מכתב החרגה ספציפי","החזר תביעות משפטיות","הצמדת מסירה","מדד לפי חישוב ידוע גמ\"ח","הוצאות","ללא הצמדה","הצמדה 2","פסק דין","הצמדה 4","הצמדה 5","שינוי דיירים זיכוי","פיצוי מוסכם בגין איחור במסירה","תשלומי איזון","מע\"מ","הסכם פשרה","גמ\"ח","איפוס חשבון","מע\"מ בגין שירותי בנייה","חיבור מים","השתתפות בהוצאות רישומים וחיבור לתשתיות","פנקס שוברים","מיסים והיטלים עירוניים","תשלום ביתר","מחילה על ריבית שנצברו בשל איחור בתשלום","שיק/העברה בגין החזר תשלום שניתן ללקוח","היטל השבחה"]
     .map(function (name, i) { return { code: String(i + 1).padStart(7, "0"), name: name }; });
@@ -92,17 +96,20 @@
   // ---------- state ----------
   var seq = 100;
   var state = {
-    cnText: "250000",
+    cnText: MOCK_CONTRACT,
     addRows: [
-      { id: 1, type: "שינויי דיירים", date: "10/04/2026", note: "הרחבת שטח לפי נספח א", net: 20000, paid: 10000 },
-      { id: 2, type: "חניה", date: "22/07/2026", note: "חניה נוספת", net: 8500, paid: 8500 },
-      { id: 3, type: "מחסן", date: "05/10/2026", note: "N/A", net: 12000, paid: 0 }
+      { id: 1, type: "טיפול משפטי", date: "03/12/2018", note: "", net: 4959.83, paid: 4959.83, gross: 5803.00, paidGross: 5803.00 },
+      { id: 2, type: "הוצאות חיבור לתשתיות", date: "", note: "", net: 4273.50, paid: 4273.50, gross: 5042.74, paidGross: 5042.74 },
+      { id: 3, type: "זיכויי בגין מדד", date: "13/03/2023", note: "תוספת שינויים - זיכוי מדדים", net: -51282.05, paid: -51282.05, gross: -60000.00, paidGross: -60000.00 },
+      { id: 4, type: "שינוי דיירים זיכוי", date: "31/08/2025", note: "תוספת 3 לחוזה - שינויי דיירים שלא בוצעו", net: -50847.46, paid: -50847.46, gross: -60000.00, paidGross: -60000.00 }
     ],
     msRows: [
-      { id: 1, date: "15/03/2026", share: 0.3, note: "מקדמה בחתימת החוזה" },
-      { id: 2, date: "30/06/2026", share: 0.5, note: "תשלום שני לפי אבן דרך" },
-      { id: 3, date: "30/09/2026", share: 0.2, note: "N/A" }
-    ],
+      { id: 1, date: "04/12/2018", net: 69189.74, gross: 80952.00, pctL: "6.06%", note: "" },
+      { id: 2, date: "25/07/2021", net: 79073.50, gross: 92516.00, pctL: "6.92%", note: "עד 3 ימים ממועד קבלת פנקס השוברים" },
+      { id: 3, date: "31/07/2025", net: 741313.68, gross: 874750.00, pctL: "64.90%", note: "תוספת - שונה מועד התשלום 31.7.25" },
+      { id: 4, date: "20/08/2025", net: 153846.15, gross: 181538.00, pctL: "13.47%", note: "" },
+      { id: 5, date: "23/02/2026", net: 98841.88, gross: 116633.00, pctL: "8.65%", note: "בכפוף להמצאת טופס 4 ועותק מטופס 50" }
+    ].map(function (m) { m.share = m.net / 1142264.957; return m; }),
     dlg: null,   // payment dialog
     vh: null     // value-help popup
   };
@@ -138,13 +145,14 @@
     var c = cn(), p = PAID_NET, b = c - p;
     var pct = c > 0 ? Math.min(100, Math.max(0, Math.round(p / c * 100))) : 0;
     function row(n) { return { net: fmt(n), vat: fmt(n * VAT_RATE / 100), gross: fmt(n * K) }; }
-    var C = row(c), P = row(p), B = row(b);
+    var isMock = state.cnText === MOCK_CONTRACT;
+    function lit(o) { return { net: fmt(o.net), vat: fmt(o.vat), gross: fmt(o.gross) }; }
+    var C = row(c), P = isMock ? lit(MOCK_PAID) : row(p), B = isMock ? lit(MOCK_BALANCE) : row(b);
     return '<section class="card" aria-labelledby="pay-title">' +
       '<div class="card-head"><h2 id="pay-title">סה"כ חוזה</h2>' +
       '<div class="progress"><span class="note" style="font-size:13px">התקדמות תשלום</span>' +
       '<div class="bar" role="img" aria-label="התקדמות תשלום ' + pct + '%"><div style="width:' + pct + '%"></div></div>' +
-      '<span class="badge">שולם ' + pct + '%</span>' +
-      '<a class="btn btn-em" style="margin-inline-start:12px" href="' + PDF_URL + '" target="_blank" rel="noopener">' + ICON.doc + 'מצב חשבון</a></div></div>' +
+      '<span class="badge">שולם ' + pct + '%</span></div></div>' +
       '<div class="table-box"><table><thead><tr><th style="width:25%"></th><th class="num" style="width:25%">סה"כ חוזה</th><th class="num" style="width:25%">סה"כ תשלום</th><th class="num hl" style="width:25%;color:#131e29;font-weight:700">יתרה</th></tr></thead><tbody>' +
       '<tr><th scope="row" class="row-label">סה"כ לפני מע"מ</th>' +
       '<td class="num" style="padding:3px 12px"><label for="contract-net" class="sr">סה"כ חוזה לפני מע"מ</label><div style="display:flex;align-items:center;gap:6px"><input id="contract-net" class="field mono" style="width:160px;text-align:left" type="text" inputmode="decimal" value="' + esc(state.cnText) + '" data-input="cn"><span>' + CURRENCY + '</span></div></td>' +
@@ -155,17 +163,18 @@
   }
 
   function additionsCard() {
-    var rows = state.addRows, sn = 0, sp = 0;
+    var rows = state.addRows, sn = 0, sp = 0, sg = 0, spg = 0;
     var body = rows.map(function (r) {
-      sn += r.net; sp += r.paid;
+      var g = r.gross != null ? r.gross : r.net * K, pg = r.paidGross != null ? r.paidGross : r.paid * K;
+      sn += r.net; sp += r.paid; sg += g; spg += pg;
       return '<tr>' +
         '<td><button type="button" class="field vh-field" aria-haspopup="dialog" aria-label="סוג תוספת: ' + esc(r.type) + '" data-act="vh-add" data-id="' + r.id + '"><span>' + esc(r.type) + '</span>' + ICON.list + '</button></td>' +
         '<td class="date">' + esc(r.date) + '</td>' +
         '<td class="note">' + esc(r.note) + '</td>' +
         '<td class="num">' + fmt(r.net) + '</td>' +
-        '<td class="num">' + fmt(r.net * K) + '</td>' +
+        '<td class="num">' + fmt(g) + '</td>' +
         '<td class="num">' + fmt(r.paid) + '</td>' +
-        '<td class="num">' + fmt(r.paid * K) + '</td>' +
+        '<td class="num">' + fmt(pg) + '</td>' +
         '<td class="num strong blue hl">' + fmt(r.net - r.paid) + '</td>' +
         '<td>' + actions("add", r.id) + '</td></tr>';
     }).join("");
@@ -179,31 +188,33 @@
       '<th class="num hl" style="width:11%;color:#131e29;font-weight:700">הפרש ללא מע"מ</th><th style="width:88px;text-align:center">פעולות</th>' +
       '</tr></thead><tbody>' + body + '</tbody>' +
       '<tfoot><tr><th scope="row" colspan="3" style="text-align:right">סה"כ תוספות</th>' +
-      '<td class="num">' + fmt(sn) + '</td><td class="num">' + fmt(sn * K) + '</td><td class="num">' + fmt(sp) + '</td><td class="num">' + fmt(sp * K) + '</td>' +
+      '<td class="num">' + fmt(sn) + '</td><td class="num">' + fmt(sg) + '</td><td class="num">' + fmt(sp) + '</td><td class="num">' + fmt(spg) + '</td>' +
       '<td class="num blue hl">' + fmt(sn - sp) + '</td><td></td></tr></tfoot></table></div></section>';
   }
 
   function milestonesCard() {
-    var c = cn(), tn = 0;
+    var c = cn(), tn = 0, tg = 0, isMock = state.cnText === MOCK_CONTRACT;
     var body = state.msRows.map(function (m, i) {
-      var net = c * m.share; tn += net;
+      var lit = isMock && m.net != null;
+      var net = lit ? m.net : c * m.share, gross = lit ? m.gross : net * K;
+      tn += net; tg += gross;
       return '<tr><td class="mono note">' + (i + 1) + '</td>' +
         '<td class="date">' + esc(m.date) + '</td>' +
         '<td class="num">' + fmt(net) + '</td>' +
-        '<td class="num">' + fmt(net * K) + '</td>' +
-        '<td class="num">' + pctOf(net) + '</td>' +
+        '<td class="num">' + fmt(gross) + '</td>' +
+        '<td class="num">' + (lit ? m.pctL : pctOf(net)) + '</td>' +
         '<td class="note">' + esc(m.note) + '</td>' +
         '<td>' + actions("ms", m.id) + '</td></tr>';
     }).join("");
     return '<section class="card" aria-labelledby="list-title">' +
-      '<div class="card-head"><h2 id="list-title">תשלומים - אבני דרך (' + state.msRows.length + ')</h2>' +
+      '<div class="card-head"><h2 id="list-title"><a href="' + SCHEDULE_PDF_URL + '" target="_blank" rel="noopener" title="פתח לוח תשלומים (PDF)" style="color:#131e29;text-decoration:none">לוח תשלומים (' + state.msRows.length + ')</a></h2>' +
       '<button type="button" class="btn" data-act="ms-append">' + ICON.plus + 'הוסף שורה</button></div>' +
       '<div class="table-box"><table><thead><tr>' +
       '<th style="width:5%">#</th><th style="width:12%">תאריך</th><th class="num" style="width:17%">סה"כ לפני מע"מ</th>' +
       '<th class="num" style="width:17%">סה"כ כולל מע"מ</th><th class="num" style="width:8%">%</th><th>הערה</th><th style="width:88px;text-align:center">פעולות</th>' +
       '</tr></thead><tbody>' + body + '</tbody>' +
       '<tfoot><tr><th scope="row" colspan="2" style="text-align:right">סה"כ</th>' +
-      '<td class="num">' + fmt(tn) + '</td><td class="num">' + fmt(tn * K) + '</td><td class="num blue">' + pctOf(tn) + '</td><td colspan="2"></td></tr></tfoot>' +
+      '<td class="num">' + fmt(tn) + '</td><td class="num">' + fmt(tg) + '</td><td class="num blue">' + pctOf(tn) + '</td><td colspan="2"></td></tr></tfoot>' +
       '</table></div></section>';
   }
 
